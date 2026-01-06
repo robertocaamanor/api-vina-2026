@@ -1,10 +1,11 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { VinaService } from './vina.service';
 
 @Controller('festival-vina-2026')
 @ApiTags('festival-vina-2026')
+@ApiBearerAuth('jwt')
 export class VinaController {
   constructor(private readonly vinaService: VinaService) {}
 

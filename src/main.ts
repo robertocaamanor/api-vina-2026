@@ -12,6 +12,15 @@ async function bootstrap() {
     .setTitle('Parrilla Viña 2026')
     .setDescription('API de la parrilla del Festival de Viña 2026')
     .setVersion('1.0.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+      },
+      'jwt',
+    )
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

@@ -68,6 +68,69 @@ La documentación Swagger se expone en:
 - Swagger UI: `http://localhost:3000/docs`
 - OpenAPI JSON: `http://localhost:3000/docs-json`
 
+## Autenticación (JWT)
+
+La API está protegida con **JWT**. Para consumir los endpoints debes enviar el header:
+
+`Authorization: Bearer <token>`
+
+### 1) Obtener token
+
+- `POST /auth/login` (público)
+
+Body:
+
+```json
+{
+  "username": "admin",
+  "password": "admin"
+}
+```
+
+Ejemplo:
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"admin\",\"password\":\"admin\"}"
+```
+
+Respuesta:
+
+```json
+{
+  "access_token": "<JWT>",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
+
+### 2) Usar token en la API
+
+Ejemplo (parrilla completa):
+
+```bash
+curl http://localhost:3000/festival-vina-2026/parrilla \
+  -H "Authorization: Bearer <JWT>"
+```
+
+### Variables de entorno
+
+Puedes cambiar el secreto y credenciales por variables de entorno:
+
+- `JWT_SECRET`: secreto para firmar/verificar tokens
+- `API_USER`: usuario válido (por defecto `admin`)
+- `API_PASSWORD`: password válido (por defecto `admin`)
+
+En Windows PowerShell (ejemplo):
+
+```powershell
+$env:JWT_SECRET="cambia_esto";
+$env:API_USER="admin";
+$env:API_PASSWORD="admin";
+npm run start:dev
+```
+
 ## Endpoints
 
 Base path:
@@ -88,7 +151,8 @@ Retorna un objeto con:
 Ejemplo:
 
 ```bash
-curl http://localhost:3000/festival-vina-2026/parrilla
+curl http://localhost:3000/festival-vina-2026/parrilla \
+  -H "Authorization: Bearer <JWT>"
 ```
 
 ### 2) Obtener programación por día
@@ -101,8 +165,11 @@ curl http://localhost:3000/festival-vina-2026/parrilla
 Ejemplos:
 
 ```bash
-curl http://localhost:3000/festival-vina-2026/programacion/Lunes
-curl http://localhost:3000/festival-vina-2026/programacion/lunes
+curl http://localhost:3000/festival-vina-2026/programacion/Lunes \
+  -H "Authorization: Bearer <JWT>"
+
+curl http://localhost:3000/festival-vina-2026/programacion/lunes \
+  -H "Authorization: Bearer <JWT>"
 ```
 
 Respuesta (ejemplo):
