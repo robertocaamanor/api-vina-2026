@@ -1,11 +1,15 @@
-import { PrismaClient, ActType } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
     console.log('Seeding Viña 2026 data...');
 
-    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Day", "Act", "CompetitionCategory", "Competitor", "DayCompetitor" RESTART IDENTITY CASCADE;`);
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Day", "ActCategory", "Act", "CompetitionCategory", "Competitor", "DayCompetitor" RESTART IDENTITY CASCADE;`);
+
+    // Crear categorías de actos
+    const actArtist = await prisma.actCategory.create({ data: { name: 'ARTIST' } });
+    const actHumorist = await prisma.actCategory.create({ data: { name: 'HUMORIST' } });
 
     // Crear categorías de competencia
     const catInt = await prisma.competitionCategory.create({ data: { name: 'INTERNATIONAL' } });
@@ -52,9 +56,9 @@ async function main() {
             date: new Date('2026-02-22T00:00:00.000Z'),
             name: 'Domingo 22',
             acts: [
-                { name: 'Gloria Estefan', type: ActType.ARTIST },
-                { name: 'Stefan Kramer', type: ActType.HUMORIST },
-                { name: 'Matteo Bocelli', type: ActType.ARTIST },
+                { name: 'Gloria Estefan', typeId: actArtist.id },
+                { name: 'Stefan Kramer', typeId: actHumorist.id },
+                { name: 'Matteo Bocelli', typeId: actArtist.id },
             ],
             comps: ['Chile_INT', 'España_INT', 'México_INT', 'Argentina_FOLK', 'España_FOLK', 'Ecuador_FOLK']
         },
@@ -62,9 +66,9 @@ async function main() {
             date: new Date('2026-02-23T00:00:00.000Z'),
             name: 'Lunes 23',
             acts: [
-                { name: 'Pet Shop Boys', type: ActType.ARTIST },
-                { name: 'Edo Caroe', type: ActType.HUMORIST },
-                { name: 'Sebastián Yatra', type: ActType.ARTIST },
+                { name: 'Pet Shop Boys', typeId: actArtist.id },
+                { name: 'Edo Caroe', typeId: actHumorist.id },
+                { name: 'Sebastián Yatra', typeId: actArtist.id },
             ],
             comps: ['Italia_INT', 'Estonia_INT', 'República Dominicana_INT', 'Chile_FOLK', 'México_FOLK', 'Colombia_FOLK']
         },
@@ -72,9 +76,9 @@ async function main() {
             date: new Date('2026-02-24T00:00:00.000Z'),
             name: 'Martes 24',
             acts: [
-                { name: 'Marco Antonio Solís', type: ActType.ARTIST },
-                { name: 'Esteban Düch', type: ActType.HUMORIST },
-                { name: 'NMIXX', type: ActType.ARTIST },
+                { name: 'Marco Antonio Solís', typeId: actArtist.id },
+                { name: 'Esteban Düch', typeId: actHumorist.id },
+                { name: 'NMIXX', typeId: actArtist.id },
             ],
             comps: ['Chile_INT', 'España_INT', 'México_INT', 'Argentina_FOLK', 'España_FOLK', 'Ecuador_FOLK']
         },
@@ -82,9 +86,9 @@ async function main() {
             date: new Date('2026-02-25T00:00:00.000Z'),
             name: 'Miércoles 25',
             acts: [
-                { name: 'Juanes', type: ActType.ARTIST },
-                { name: 'Asskha Sumathra', type: ActType.HUMORIST },
-                { name: 'Ke Personajes', type: ActType.ARTIST },
+                { name: 'Juanes', typeId: actArtist.id },
+                { name: 'Asskha Sumathra', typeId: actHumorist.id },
+                { name: 'Ke Personajes', typeId: actArtist.id },
             ],
             comps: ['Italia_INT', 'Estonia_INT', 'República Dominicana_INT', 'Chile_FOLK', 'México_FOLK', 'Colombia_FOLK']
         },
@@ -92,9 +96,9 @@ async function main() {
             date: new Date('2026-02-26T00:00:00.000Z'),
             name: 'Jueves 26',
             acts: [
-                { name: 'Mon Laferte', type: ActType.ARTIST },
-                { name: 'Piare con P', type: ActType.HUMORIST },
-                { name: 'Yandel Sinfónico', type: ActType.ARTIST },
+                { name: 'Mon Laferte', typeId: actArtist.id },
+                { name: 'Piare con P', typeId: actHumorist.id },
+                { name: 'Yandel Sinfónico', typeId: actArtist.id },
             ],
             comps: []
         },
@@ -102,10 +106,10 @@ async function main() {
             date: new Date('2026-02-27T00:00:00.000Z'),
             name: 'Viernes 27',
             acts: [
-                { name: 'Paulo Londra', type: ActType.ARTIST },
-                { name: 'Pablo Chill-E', type: ActType.ARTIST },
-                { name: 'Pastor Rocha', type: ActType.HUMORIST },
-                { name: 'Milo J', type: ActType.ARTIST },
+                { name: 'Paulo Londra', typeId: actArtist.id },
+                { name: 'Pablo Chill-E', typeId: actArtist.id },
+                { name: 'Pastor Rocha', typeId: actHumorist.id },
+                { name: 'Milo J', typeId: actArtist.id },
             ],
             comps: []
         },
@@ -119,7 +123,7 @@ async function main() {
                 acts: {
                     create: day.acts.map(act => ({
                         name: act.name,
-                        type: act.type,
+                        typeId: act.typeId,
                         hasSilverSeagull: false,
                         hasGoldSeagull: false,
                     }))

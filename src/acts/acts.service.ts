@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ActType } from '@prisma/client';
 
 @Injectable()
 export class ActsService {
     constructor(private readonly prisma: PrismaService) { }
 
-    findAll(type?: ActType) {
+    findAll(typeId?: number) {
         return this.prisma.act.findMany({
-            where: type ? { type } : undefined,
-            include: { day: true }
+            where: typeId ? { typeId } : undefined,
+            include: { day: true, type: true }
         });
     }
 
     findOne(id: number) {
         return this.prisma.act.findUnique({
             where: { id },
-            include: { day: true },
+            include: { day: true, type: true },
         });
     }
 }

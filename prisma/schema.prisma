@@ -21,15 +21,18 @@ model Day {
   competitors  DayCompetitor[]
 }
 
-enum ActType {
-  ARTIST
-  HUMORIST
+model ActCategory {
+  id    Int    @id @default(autoincrement()) // 1 = ARTIST, 2 = HUMORIST
+  name  String @unique
+  acts  Act[]
 }
 
 model Act {
   id               Int     @id @default(autoincrement())
   name             String
-  type             ActType
+  
+  typeId           Int
+  type             ActCategory @relation(fields: [typeId], references: [id])
   hasSilverSeagull Boolean @default(false)
   hasGoldSeagull   Boolean @default(false)
   

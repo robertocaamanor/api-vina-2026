@@ -1,8 +1,7 @@
 import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { ActsService } from './acts.service';
-import { ActType } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Acts')
 @ApiBearerAuth()
@@ -11,9 +10,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class ActsController {
     constructor(private readonly actsService: ActsService) { }
 
+    @ApiQuery({ name: 'categoryId', required: false, type: Number, description: '1 para ARTIST, 2 para HUMORIST' })
     @Get()
-    findAll(@Query('type') type?: ActType) {
-        return this.actsService.findAll(type);
+    findAll(@Query('categoryId') categoryId?: string) {
+        return this.actsService.findAll(categoryId ? parseInt(categoryId) : undefined);
     }
 
     @Get(':id')
