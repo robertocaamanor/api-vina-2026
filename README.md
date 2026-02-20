@@ -35,7 +35,7 @@ Una **API RESTful** integral desarrollada en y para el **Festival Internacional 
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/TU_USUARIO/vina_2026_api.git
+git clone https://github.com/robertocaamanor/api-vina-2026.git
 cd vina_2026_api
 ```
 
