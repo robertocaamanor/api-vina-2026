@@ -1,6 +1,15 @@
-node_modules
-# Keep environment variables out of version control
+# Compilación
+/dist
+/node_modules
+
+# Variables de entorno (¡Muy importante por seguridad!)
 .env
 
-/generated/prisma
-/dist
+# Logs y archivos temporales
+*.log
+error.txt
+log.txt
+out.txt
+
+# OS específicos
+.DS_Store
