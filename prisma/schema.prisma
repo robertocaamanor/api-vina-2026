@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Day {
+  id           Int           @id @default(autoincrement())
+  date         DateTime      @unique
+  name         String?       @map("name_of_day") // Optional human-readable name like "Noche Cero", etc.
+  acts         Act[]
+  competitions Competition[]
+}
+
+enum ActType {
+  ARTIST
+  HUMORIST
+}
+
+model Act {
+  id               Int     @id @default(autoincrement())
+  name             String
+  type             ActType
+  hasSilverSeagull Boolean @default(false)
+  hasGoldSeagull   Boolean @default(false)
+  
+  dayId            Int
+  day              Day     @relation(fields: [dayId], references: [id], onDelete: Cascade)
+}
+
+enum CompetitionType {
+  FOLKLORIC
+  INTERNATIONAL
+}
+
+model Competition {
+  id          Int             @id @default(autoincrement())
+  type        CompetitionType
+  participant String
+  song        String
+  country     String
+
+  dayId       Int
+  day         Day             @relation(fields: [dayId], references: [id], onDelete: Cascade)
+}
