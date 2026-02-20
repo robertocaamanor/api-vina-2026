@@ -1,15 +1,14 @@
 # Compilación
 /dist
 /node_modules
+/coverage
 
 # Variables de entorno (¡Muy importante por seguridad!)
 .env
 
 # Logs y archivos temporales
 *.log
-error.txt
-log.txt
-out.txt
+*.txt
 
 # OS específicos
 .DS_Store
