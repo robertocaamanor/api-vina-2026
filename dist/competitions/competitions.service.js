@@ -17,16 +17,16 @@ let CompetitionsService = class CompetitionsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    findAll(type) {
-        return this.prisma.competition.findMany({
-            where: type ? { type } : undefined,
-            include: { day: true },
+    findAll(categoryId) {
+        return this.prisma.competitor.findMany({
+            where: categoryId ? { categoryId } : undefined,
+            include: { category: true, days: { include: { day: true } } },
         });
     }
     findOne(id) {
-        return this.prisma.competition.findUnique({
+        return this.prisma.competitor.findUnique({
             where: { id },
-            include: { day: true },
+            include: { category: true, days: { include: { day: true } } },
         });
     }
 };

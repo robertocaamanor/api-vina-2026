@@ -1,34 +1,51 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { CompetitionType } from '@prisma/client';
 export declare class CompetitionsService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    findAll(type?: CompetitionType): import("@prisma/client").Prisma.PrismaPromise<({
-        day: {
+    findAll(categoryId?: number): import("@prisma/client").Prisma.PrismaPromise<({
+        category: {
             id: number;
-            date: Date;
-            name: string | null;
+            name: string;
         };
+        days: ({
+            day: {
+                id: number;
+                date: Date;
+                name: string | null;
+            };
+        } & {
+            id: number;
+            dayId: number;
+            competitorId: number;
+        })[];
     } & {
         id: number;
-        type: import("@prisma/client").$Enums.CompetitionType;
-        dayId: number;
         participant: string;
         song: string;
         country: string;
+        categoryId: number;
     })[]>;
-    findOne(id: number): import("@prisma/client").Prisma.Prisma__CompetitionClient<({
-        day: {
+    findOne(id: number): import("@prisma/client").Prisma.Prisma__CompetitorClient<({
+        category: {
             id: number;
-            date: Date;
-            name: string | null;
+            name: string;
         };
+        days: ({
+            day: {
+                id: number;
+                date: Date;
+                name: string | null;
+            };
+        } & {
+            id: number;
+            dayId: number;
+            competitorId: number;
+        })[];
     } & {
         id: number;
-        type: import("@prisma/client").$Enums.CompetitionType;
-        dayId: number;
         participant: string;
         song: string;
         country: string;
+        categoryId: number;
     }) | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
 }

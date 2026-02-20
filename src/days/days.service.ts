@@ -7,14 +7,14 @@ export class DaysService {
 
     findAll() {
         return this.prisma.day.findMany({
-            include: { acts: true, competitions: true },
+            include: { acts: true, competitors: { include: { competitor: { include: { category: true } } } } },
         });
     }
 
     findOne(id: number) {
         return this.prisma.day.findUnique({
             where: { id },
-            include: { acts: true, competitions: true },
+            include: { acts: true, competitors: { include: { competitor: { include: { category: true } } } } },
         });
     }
 }

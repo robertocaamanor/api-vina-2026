@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CompetitionType } from '@prisma/client';
 
 @Injectable()
 export class CompetitionsService {
     constructor(private readonly prisma: PrismaService) { }
 
-    findAll(type?: CompetitionType) {
-        return this.prisma.competition.findMany({
-            where: type ? { type } : undefined,
-            include: { day: true },
+    findAll(categoryId?: number) {
+        return this.prisma.competitor.findMany({
+            where: categoryId ? { categoryId } : undefined,
+            include: { category: true, days: { include: { day: true } } },
         });
     }
 
     findOne(id: number) {
-        return this.prisma.competition.findUnique({
+        return this.prisma.competitor.findUnique({
             where: { id },
-            include: { day: true },
+            include: { category: true, days: { include: { day: true } } },
         });
     }
 }

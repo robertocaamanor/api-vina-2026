@@ -11,14 +11,24 @@ export declare class DaysService {
             hasGoldSeagull: boolean;
             dayId: number;
         }[];
-        competitions: {
+        competitors: ({
+            competitor: {
+                category: {
+                    id: number;
+                    name: string;
+                };
+            } & {
+                id: number;
+                participant: string;
+                song: string;
+                country: string;
+                categoryId: number;
+            };
+        } & {
             id: number;
-            type: import("@prisma/client").$Enums.CompetitionType;
             dayId: number;
-            participant: string;
-            song: string;
-            country: string;
-        }[];
+            competitorId: number;
+        })[];
     } & {
         id: number;
         date: Date;
@@ -33,14 +43,24 @@ export declare class DaysService {
             hasGoldSeagull: boolean;
             dayId: number;
         }[];
-        competitions: {
+        competitors: ({
+            competitor: {
+                category: {
+                    id: number;
+                    name: string;
+                };
+            } & {
+                id: number;
+                participant: string;
+                song: string;
+                country: string;
+                categoryId: number;
+            };
+        } & {
             id: number;
-            type: import("@prisma/client").$Enums.CompetitionType;
             dayId: number;
-            participant: string;
-            song: string;
-            country: string;
-        }[];
+            competitorId: number;
+        })[];
     } & {
         id: number;
         date: Date;

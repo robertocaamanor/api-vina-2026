@@ -1,38 +1,50 @@
-import { PrismaClient, ActType, CompetitionType } from '@prisma/client';
+import { PrismaClient, ActType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log('Seeding Viña 2026 data based on official Wikipedia schedule...');
+    console.log('Seeding Viña 2026 data...');
 
-    // Limpiar base de datos y reiniciar contadores (IDs) desde 1
-    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Day", "Act", "Competition" RESTART IDENTITY CASCADE;`);
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Day", "Act", "CompetitionCategory", "Competitor", "DayCompetitor" RESTART IDENTITY CASCADE;`);
 
-    const intCompetitors = {
-        grupo1: [
-            { country: 'Chile', song: 'El Ciclo', participant: 'Son del Valle' },
-            { country: 'España', song: 'Me Prometo', participant: 'Antoñito Molina' },
-            { country: 'México', song: 'Ruta Correcta', participant: 'TREX' },
-        ],
-        grupo2: [
-            { country: 'Italia', song: 'Grazie A(d)dio', participant: 'Chiara Grispo' },
-            { country: 'Estonia', song: 'Ready To Go', participant: 'Vanilla Ninja' },
-            { country: 'República Dominicana', song: 'Call on Me', participant: 'Johnny Sky' },
-        ]
-    };
+    // Crear categorías de competencia
+    const catInt = await prisma.competitionCategory.create({ data: { name: 'INTERNATIONAL' } });
+    const catFolk = await prisma.competitionCategory.create({ data: { name: 'FOLKLORIC' } });
 
-    const folkCompetitors = {
-        grupo1: [
-            { country: 'Argentina', song: 'La Zamba', participant: 'Campedrinos' },
-            { country: 'España', song: 'Que vengan por mí', participant: 'María Peláe' },
-            { country: 'Ecuador', song: 'Capullito', participant: 'Brenda' },
-        ],
-        grupo2: [
-            { country: 'Chile', song: 'Valoración', participant: 'A los 4 Vientos' },
-            { country: 'México', song: 'Ningún color tiene dueño', participant: 'Majo Cornejo' },
-            { country: 'Colombia', song: 'Los Herederos', participant: 'Rebolú' },
-        ]
-    };
+    const intCompetitorsRaw = [
+        { country: 'Chile', song: 'El Ciclo', participant: 'Son del Valle' },
+        { country: 'España', song: 'Me Prometo', participant: 'Antoñito Molina' },
+        { country: 'Italia', song: 'Grazie A(d)dio', participant: 'Chiara Grispo' },
+        { country: 'México', song: 'Ruta Correcta', participant: 'TREX' },
+        { country: 'República Dominicana', song: 'Call on Me', participant: 'Johnny Sky' },
+        { country: 'Estonia', song: 'Ready To Go', participant: 'Vanilla Ninja' },
+    ];
+
+    const folkCompetitorsRaw = [
+        { country: 'Argentina', song: 'La Zamba', participant: 'Campedrinos' },
+        { country: 'Chile', song: 'Valoración', participant: 'A los 4 Vientos' },
+        { country: 'Colombia', song: 'Los Herederos', participant: 'Rebolú' },
+        { country: 'Ecuador', song: 'Capullito', participant: 'Brenda' },
+        { country: 'España', song: 'Que vengan por mí', participant: 'María Peláe' },
+        { country: 'México', song: 'Ningún color tiene dueño', participant: 'Majo Cornejo' },
+    ];
+
+    // Insertar cada competidor e indexarlo vía diccionario (clave: país_categoría) para enlazarlos después
+    const competitorMap: Record<string, number> = {};
+
+    for (const c of intCompetitorsRaw) {
+        const comp = await prisma.competitor.create({
+            data: { ...c, categoryId: catInt.id }
+        });
+        competitorMap[`${c.country}_INT`] = comp.id;
+    }
+
+    for (const c of folkCompetitorsRaw) {
+        const comp = await prisma.competitor.create({
+            data: { ...c, categoryId: catFolk.id }
+        });
+        competitorMap[`${c.country}_FOLK`] = comp.id;
+    }
 
     // Días del festival
     const daysData = [
@@ -44,8 +56,7 @@ async function main() {
                 { name: 'Stefan Kramer', type: ActType.HUMORIST },
                 { name: 'Matteo Bocelli', type: ActType.ARTIST },
             ],
-            international: intCompetitors.grupo1,
-            folkloric: folkCompetitors.grupo1
+            comps: ['Chile_INT', 'España_INT', 'México_INT', 'Argentina_FOLK', 'España_FOLK', 'Ecuador_FOLK']
         },
         {
             date: new Date('2026-02-23T00:00:00.000Z'),
@@ -55,8 +66,7 @@ async function main() {
                 { name: 'Edo Caroe', type: ActType.HUMORIST },
                 { name: 'Sebastián Yatra', type: ActType.ARTIST },
             ],
-            international: intCompetitors.grupo2,
-            folkloric: folkCompetitors.grupo2
+            comps: ['Italia_INT', 'Estonia_INT', 'República Dominicana_INT', 'Chile_FOLK', 'México_FOLK', 'Colombia_FOLK']
         },
         {
             date: new Date('2026-02-24T00:00:00.000Z'),
@@ -66,8 +76,7 @@ async function main() {
                 { name: 'Esteban Düch', type: ActType.HUMORIST },
                 { name: 'NMIXX', type: ActType.ARTIST },
             ],
-            international: intCompetitors.grupo1,
-            folkloric: folkCompetitors.grupo1
+            comps: ['Chile_INT', 'España_INT', 'México_INT', 'Argentina_FOLK', 'España_FOLK', 'Ecuador_FOLK']
         },
         {
             date: new Date('2026-02-25T00:00:00.000Z'),
@@ -77,8 +86,7 @@ async function main() {
                 { name: 'Asskha Sumathra', type: ActType.HUMORIST },
                 { name: 'Ke Personajes', type: ActType.ARTIST },
             ],
-            international: intCompetitors.grupo2,
-            folkloric: folkCompetitors.grupo2
+            comps: ['Italia_INT', 'Estonia_INT', 'República Dominicana_INT', 'Chile_FOLK', 'México_FOLK', 'Colombia_FOLK']
         },
         {
             date: new Date('2026-02-26T00:00:00.000Z'),
@@ -88,8 +96,7 @@ async function main() {
                 { name: 'Piare con P', type: ActType.HUMORIST },
                 { name: 'Yandel Sinfónico', type: ActType.ARTIST },
             ],
-            international: [],
-            folkloric: []
+            comps: []
         },
         {
             date: new Date('2026-02-27T00:00:00.000Z'),
@@ -100,8 +107,7 @@ async function main() {
                 { name: 'Pastor Rocha', type: ActType.HUMORIST },
                 { name: 'Milo J', type: ActType.ARTIST },
             ],
-            international: [],
-            folkloric: []
+            comps: []
         },
     ];
 
@@ -118,21 +124,10 @@ async function main() {
                         hasGoldSeagull: false,
                     }))
                 },
-                competitions: {
-                    create: [
-                        ...day.international.map(c => ({
-                            type: CompetitionType.INTERNATIONAL,
-                            country: c.country,
-                            participant: c.participant,
-                            song: c.song,
-                        })),
-                        ...day.folkloric.map(c => ({
-                            type: CompetitionType.FOLKLORIC,
-                            country: c.country,
-                            participant: c.participant,
-                            song: c.song,
-                        }))
-                    ]
+                competitors: {
+                    create: day.comps.map(compKey => ({
+                        competitorId: competitorMap[compKey]
+                    }))
                 }
             }
         });

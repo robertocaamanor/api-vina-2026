@@ -14,26 +14,32 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompetitionsController = void 0;
 const common_1 = require("@nestjs/common");
-const competitions_service_1 = require("./competitions.service");
-const client_1 = require("@prisma/client");
+const prisma_service_1 = require("../prisma/prisma.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth/jwt-auth.guard");
 const swagger_1 = require("@nestjs/swagger");
 let CompetitionsController = class CompetitionsController {
-    competitionsService;
-    constructor(competitionsService) {
-        this.competitionsService = competitionsService;
+    prisma;
+    constructor(prisma) {
+        this.prisma = prisma;
     }
-    findAll(type) {
-        return this.competitionsService.findAll(type);
+    findAll(categoryId) {
+        return this.prisma.competitor.findMany({
+            where: categoryId ? { categoryId: parseInt(categoryId) } : undefined,
+            include: { category: true, days: { include: { day: true } } }
+        });
     }
     findOne(id) {
-        return this.competitionsService.findOne(id);
+        return this.prisma.competitor.findUnique({
+            where: { id },
+            include: { category: true, days: { include: { day: true } } },
+        });
     }
 };
 exports.CompetitionsController = CompetitionsController;
 __decorate([
+    (0, swagger_1.ApiQuery)({ name: 'category', required: false, type: Number, description: '1 para Int, 2 para Folk' }),
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('type')),
+    __param(0, (0, common_1.Query)('category')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
@@ -50,6 +56,6 @@ exports.CompetitionsController = CompetitionsController = __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('competitions'),
-    __metadata("design:paramtypes", [competitions_service_1.CompetitionsService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], CompetitionsController);
 //# sourceMappingURL=competitions.controller.js.map

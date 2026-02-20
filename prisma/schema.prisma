@@ -18,7 +18,7 @@ model Day {
   date         DateTime      @unique
   name         String?       @map("name_of_day") // Optional human-readable name like "Noche Cero", etc.
   acts         Act[]
-  competitions Competition[]
+  competitors  DayCompetitor[]
 }
 
 enum ActType {
@@ -37,18 +37,31 @@ model Act {
   day              Day     @relation(fields: [dayId], references: [id], onDelete: Cascade)
 }
 
-enum CompetitionType {
-  FOLKLORIC
-  INTERNATIONAL
+model CompetitionCategory {
+  id          Int          @id @default(autoincrement()) // 1 = International, 2 = Folkloric
+  name        String       @unique
+  competitors Competitor[]
 }
 
-model Competition {
-  id          Int             @id @default(autoincrement())
-  type        CompetitionType
+model Competitor {
+  id         Int                 @id @default(autoincrement())
   participant String
   song        String
   country     String
+  
+  categoryId  Int
+  category    CompetitionCategory @relation(fields: [categoryId], references: [id])
+  
+  days        DayCompetitor[]
+}
 
-  dayId       Int
-  day         Day             @relation(fields: [dayId], references: [id], onDelete: Cascade)
+// Tabla relacional explícita (Join Table) entre Days y Competitors
+model DayCompetitor {
+  id           Int        @id @default(autoincrement())
+  dayId        Int
+  day          Day        @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  competitorId Int
+  competitor   Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+
+  @@unique([dayId, competitorId])
 }
