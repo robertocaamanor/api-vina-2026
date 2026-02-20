@@ -5,10 +5,8 @@ const prisma = new PrismaClient();
 async function main() {
     console.log('Seeding Viña 2026 data based on official Wikipedia schedule...');
 
-    // Limpiar base de datos
-    await prisma.competition.deleteMany({});
-    await prisma.act.deleteMany({});
-    await prisma.day.deleteMany({});
+    // Limpiar base de datos y reiniciar contadores (IDs) desde 1
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Day", "Act", "Competition" RESTART IDENTITY CASCADE;`);
 
     const intCompetitors = {
         grupo1: [
